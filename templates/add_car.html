@@ -1,0 +1,98 @@
+<!-- templates/add_car.html -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Car</title>
+    <style>
+        body {
+            background: black;
+            color: white;
+            font-family: Arial;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: gold;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+        }
+        
+        input, button {
+            padding: 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        input {
+            background: #222;
+            color: white;
+        }
+        
+        input::placeholder {
+            color: #999;
+        }
+        
+        button {
+            background: gold;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        a {
+            color: gold;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Add Car</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Car Name"
+            required>
+
+        <input
+            type="text"
+            name="type"
+            placeholder="Car Type (e.g., SUV, Sedan, Luxury)"
+            required>
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*"
+            required>
+
+        <button type="submit">
+            Save Car
+        </button>
+
+    </form>
+    
+    <a href="/admin">← Back to Dashboard</a>
+
+</body>
+
+</html>

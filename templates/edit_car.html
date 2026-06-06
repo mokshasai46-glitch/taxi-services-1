@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Car</title>
+<style>
+body {
+    background: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 40px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+}
+input, button {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+}
+input {
+    background: #222;
+    color: white;
+}
+button {
+    background: gold;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+button:hover {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+a {
+    color: gold;
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+    <h1>Edit Car</h1>
+    {% if car.image %}
+        <p>Current image:</p>
+        <img src="{{ url_for('static', filename='uploads/' + car.image) }}" alt="Current car image">
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        <input
+            type="text"
+            name="name"
+            value="{{ car.name }}"
+            placeholder="Car Name"
+            required>
+
+        <input
+            type="text"
+            name="type"
+            value="{{ car.type }}"
+            placeholder="Car Type (e.g., SUV, Sedan, Luxury)"
+            required>
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*">
+
+        <button type="submit">
+            Save Changes
+        </button>
+    </form>
+    <a href="/admin">← Back to Dashboard</a>
+</body>
+</html>

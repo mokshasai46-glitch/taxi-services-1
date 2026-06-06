@@ -1,0 +1,17 @@
+{
+    "driver_name": "Luxury Driver",
+    "services": [
+        {
+            "title": "terupathi",
+            "desc": "trip to tirupathi"
+        }
+    ],
+    "cars": [
+        {
+            "name": "lavangam",
+            "type": "taxi"
+        }
+    ],
+    "contacts": [],
+    "phone": "8500852845"
+}

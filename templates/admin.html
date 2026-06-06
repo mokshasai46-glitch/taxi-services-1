@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Luxury Driver Dashboard</title>
+
+<style>
+
+body{
+    background:#050505;
+    color:white;
+    font-family:Arial;
+    padding:40px;
+}
+
+h1,h2{
+    color:gold;
+}
+
+.card{
+    background:#111;
+    padding:25px;
+    border-radius:20px;
+    margin-top:30px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:#222;
+    color:white;
+}
+
+button{
+    margin-top:15px;
+    padding:14px 25px;
+    border:none;
+    border-radius:10px;
+    background:gold;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.delete-btn{
+    background:red;
+    color:white;
+}
+
+.item{
+    background:#1a1a1a;
+    padding:20px;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+Luxury Driver Dashboard
+</h1>
+
+<!-- ADD SERVICE -->
+ <h1>
+Add Service</h1>
+<form method="POST" enctype="multipart/form-data">
+
+<input
+type="hidden"
+name="action"
+value="add_service">
+
+<input
+type="text"
+name="service_title"
+placeholder="Service Name"
+required>
+
+<input
+type="text"
+name="service_desc"
+placeholder="Description"
+required>
+
+<input
+type="file"
+name="service_image"
+accept="image/*"
+required>
+
+<button type="submit">
+Add Service
+</button>
+
+</form>
+
+<!-- SERVICES LIST -->
+
+<div class="card">
+
+<h2>Current Services</h2>
+
+{% for s in services %}
+
+<div class="item">
+
+<h3>{{ s.title }}</h3>
+
+<p>{{ s.desc }}</p>
+
+<form method="POST">
+
+<input
+type="hidden"
+name="action"
+value="delete_service">
+
+<input
+type="hidden"
+name="index"
+value="{{ loop.index0 }}">
+
+<button
+type="submit"
+class="delete-btn">
+
+Delete Service
+
+</button>
+
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<!-- ADD CAR -->
+<h2>Add Car</h2>    
+<form method="POST" enctype="multipart/form-data">
+
+<input
+type="hidden"
+name="action"
+value="add_car">
+
+<input
+type="text"
+name="car_name"
+placeholder="Car Name"
+required>
+
+<input
+type="text"
+name="car_type"
+placeholder="Car Type"
+required>
+
+<input
+type="file"
+name="car_image"
+accept="image/*"
+required>
+
+<button type="submit">
+Add Car
+</button>
+
+</form>
+
+<!-- CARS LIST -->
+
+<div class="card">
+
+<h2>Current Cars</h2>
+
+{% for c in cars %}
+
+<div class="item">
+
+<h3>{{ c.name }}</h3>
+
+<p>{{ c.type }}</p>
+
+<form method="POST">
+
+<input
+type="hidden"
+name="action"
+value="delete_car">
+
+<input
+type="hidden"
+name="index"
+value="{{ loop.index0 }}">
+
+<button
+type="submit"
+class="delete-btn">
+
+Delete Car
+
+</button>
+
+</form>
+
+<form method="GET" action="/edit-car/{{ loop.index0 }}">
+    <button type="submit">
+        Edit Car
+    </button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<!-- CONTACT -->
+
+<div class="card">
+
+<h2>Update Contact</h2>
+
+<form method="POST">
+
+<input
+    type="hidden"
+    name="action"
+    value="update_contact">
+
+<input
+    type="text"
+    name="phone"
+    value="{{ phone }}"
+    required>
+
+<button type="submit">
+Update Contact
+</button>
+
+</form>
+
+</div>
+
+</body>
+
+</html>
