@@ -476,7 +476,7 @@ Explore Services
 
 <div class="grid">
 
-{% for s in data.services %}
+{% for s in services %}
 
 <div class="card">
 
@@ -491,7 +491,7 @@ Explore Services
 <h3>{{ s.title }}</h3>
 
 <p>
-{{ s.desc }}
+{{ s.description }}
 </p>
 
 </div>
@@ -512,7 +512,7 @@ Explore Services
 
 <div class="grid">
 
-{% for c in data.cars %}
+{% for c in cars %}
 
 <div class="card">
 
@@ -586,7 +586,7 @@ Available anytime for premium travel services.
 
 <div class="contact-buttons">
 
-<a href="tel:{{ data.phone }}">
+<a href="tel:+911234567890">
 
 <button>
 Call Now

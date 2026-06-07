@@ -74,30 +74,24 @@ Luxury Driver Dashboard
 <!-- ADD SERVICE -->
  <h1>
 Add Service</h1>
-<form method="POST" enctype="multipart/form-data">
-
-<input
-type="hidden"
-name="action"
-value="add_service">
+<form action="/add-service" method="POST" enctype="multipart/form-data">
 
 <input
 type="text"
-name="service_title"
+name="title"
 placeholder="Service Name"
 required>
 
 <input
 type="text"
-name="service_desc"
+name="description"
 placeholder="Description"
 required>
 
 <input
 type="file"
 name="service_image"
-accept="image/*"
-required>
+accept="image/*">
 
 <button type="submit">
 Add Service
@@ -149,30 +143,24 @@ Delete Service
 
 <!-- ADD CAR -->
 <h2>Add Car</h2>    
-<form method="POST" enctype="multipart/form-data">
-
-<input
-type="hidden"
-name="action"
-value="add_car">
+<form action="/add-car" method="POST" enctype="multipart/form-data">
 
 <input
 type="text"
-name="car_name"
+name="name"
 placeholder="Car Name"
 required>
 
 <input
 type="text"
-name="car_type"
+name="type"
 placeholder="Car Type"
 required>
 
 <input
 type="file"
 name="car_image"
-accept="image/*"
-required>
+accept="image/*">
 
 <button type="submit">
 Add Car

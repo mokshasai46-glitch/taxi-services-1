@@ -64,7 +64,7 @@
 
     <h1>Add Service</h1>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
 
         <input
             type="text"
@@ -77,6 +77,11 @@
             placeholder="Service Description"
             rows="5"
             required></textarea>
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*">
 
         <button type="submit">
             Save Service
