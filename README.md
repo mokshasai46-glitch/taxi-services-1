@@ -7,18 +7,24 @@ This is a Flask-based taxi booking demo with admin and customer pages.
 ### Recommended setup
 1. Push this repository to GitHub.
 2. Use a Python web host such as Heroku, Render, or Railway.
+3. Ensure `requirements.txt`, `runtime.txt`, and `Procfile` are present.
 
 ### Heroku
 1. Install the Heroku CLI.
 2. Run `heroku create`.
 3. Run `git push heroku main` (or `master` as appropriate).
-4. Use `heroku open` to view the app.
+4. Run `heroku open` to view the app.
 
 ### Render / Railway
 1. Create a new Web Service.
 2. Connect your GitHub repo.
 3. Set the build command to `pip install -r requirements.txt`.
 4. Set the start command to `gunicorn app:app`.
+
+### Notes for all hosts
+- The app reads the `PORT` environment variable and binds to `0.0.0.0`.
+- The app stores services, cars, and contact details in `data.json` so changes persist across restarts.
+- Do not enable Flask debug mode in production. Use `FLASK_DEBUG=true` only for local development.
 
 ## Local run
 
