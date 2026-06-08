@@ -1,17 +1,5 @@
 {
-  "driver_name": "Luxury Driver",
-  "phone": "8500852845",
-  "services": [
-    {
-      "title": "tirip",
-      "desc": "trip",
-      "image": ""
-    },
-    {
-      "title": "trip",
-      "desc": "trip",
-      "image": ""
-    }
-  ],
-  "cars": []
+  "services": [],
+  "cars": [],
+  "phone": "8500852845"
 }

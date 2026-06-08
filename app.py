@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
+import json
 import os
 
 app = Flask(__name__)
@@ -10,23 +11,42 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Ensure upload folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-services = [
-    {
-        "title": "Airport Pickup",
-        "description": "Safe airport pickup and drop service",
-        "image": ""
-    }
-]
+DATA_FILE = 'data.json'
 
-cars = [
-    {
-        "name": "Toyota Innova",
-        "type": "SUV",
-        "image": ""
-    }
-]
-
+services = []
+cars = []
 phone = "+911234567890"
+
+
+def load_data():
+    global services, cars, phone
+    if not os.path.exists(DATA_FILE):
+        save_data()
+        return
+
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            services = data.get('services', []) or []
+            cars = data.get('cars', []) or []
+            phone = data.get('phone', phone) or phone
+    except (ValueError, IOError):
+        services = []
+        cars = []
+        phone = phone
+
+
+def save_data():
+    data = {
+        'services': services,
+        'cars': cars,
+        'phone': phone
+    }
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+
+load_data()
 
 @app.route("/")
 def home():
@@ -54,6 +74,7 @@ def admin():
             if new_phone:
                 global phone
                 phone = new_phone
+        save_data()
         return redirect("/admin")
 
     return render_template(
@@ -87,6 +108,7 @@ def add_service():
             "description": description,
             "image": image_filename
         })
+        save_data()
 
         return redirect("/admin")
 
@@ -116,6 +138,7 @@ def add_car():
             "type": car_type,
             "image": image_filename
         })
+        save_data()
 
         return redirect("/admin")
 
