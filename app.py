@@ -121,6 +121,8 @@ def add_car():
 
         name = request.form["name"]
         car_type = request.form["type"]
+        specification = request.form.get("specification", "").strip()
+        rate_per_km = request.form.get("rate_per_km", "").strip()
         image_file = request.files.get("image") or request.files.get("car_image")
         image_filename = ""
 
@@ -133,9 +135,16 @@ def add_car():
                 )
             )
 
+        try:
+            rate_per_km_value = float(rate_per_km) if rate_per_km else 0.0
+        except ValueError:
+            rate_per_km_value = 0.0
+
         cars.append({
             "name": name,
             "type": car_type,
+            "specification": specification,
+            "rate_per_km": rate_per_km_value,
             "image": image_filename
         })
         save_data()
@@ -143,6 +152,40 @@ def add_car():
         return redirect("/admin")
 
     return render_template("add_car.html")
+
+@app.route("/edit-car/<int:index>", methods=["GET", "POST"])
+def edit_car(index):
+    if index < 0 or index >= len(cars):
+        return redirect("/admin")
+
+    car = cars[index]
+
+    if request.method == "POST":
+        car["name"] = request.form["name"]
+        car["type"] = request.form["type"]
+        car["specification"] = request.form.get("specification", "").strip()
+        rate_per_km = request.form.get("rate_per_km", "").strip()
+        image_file = request.files.get("image") or request.files.get("car_image")
+
+        if image_file and image_file.filename:
+            image_filename = secure_filename(image_file.filename)
+            image_file.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    image_filename
+                )
+            )
+            car["image"] = image_filename
+
+        try:
+            car["rate_per_km"] = float(rate_per_km) if rate_per_km else car.get("rate_per_km", 0.0)
+        except ValueError:
+            car["rate_per_km"] = car.get("rate_per_km", 0.0)
+
+        save_data()
+        return redirect("/admin")
+
+    return render_template("edit_car.html", car=car)
 
 if __name__ == "__main__":
     app.run(debug=True)

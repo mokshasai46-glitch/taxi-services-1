@@ -158,6 +158,20 @@ placeholder="Car Type"
 required>
 
 <input
+type="text"
+name="specification"
+placeholder="Specification"
+>
+
+<input
+type="number"
+step="0.01"
+min="0"
+name="rate_per_km"
+placeholder="Rate per km"
+required>
+
+<input
 type="file"
 name="car_image"
 accept="image/*">
@@ -181,6 +195,8 @@ Add Car
 <h3>{{ c.name }}</h3>
 
 <p>{{ c.type }}</p>
+<p>{{ c.specification }}</p>
+<p>Rate: ₹{{ c.rate_per_km }}/km</p>
 
 <form method="POST">
 

@@ -69,6 +69,20 @@ a {
             required>
 
         <input
+            type="text"
+            name="specification"
+            value="{{ car.specification or '' }}"
+            placeholder="Specification (e.g., 5 seats, automatic, AC)">
+
+        <input
+            type="number"
+            step="0.01"
+            min="0"
+            name="rate_per_km"
+            value="{{ car.rate_per_km or '' }}"
+            placeholder="Rate per km">
+
+        <input
             type="file"
             name="image"
             accept="image/*">
