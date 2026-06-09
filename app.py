@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
 import json
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -16,10 +17,12 @@ DATA_FILE = 'data.json'
 services = []
 cars = []
 phone = "+911234567890"
+admin_location = None
+admin_address = ""
 
 
 def load_data():
-    global services, cars, phone
+    global services, cars, phone, admin_location, admin_address
     if not os.path.exists(DATA_FILE):
         save_data()
         return
@@ -30,17 +33,23 @@ def load_data():
             services = data.get('services', []) or []
             cars = data.get('cars', []) or []
             phone = data.get('phone', phone) or phone
+            admin_location = data.get('admin_location') or None
+            admin_address = data.get('admin_address', '') or ''
     except (ValueError, IOError):
         services = []
         cars = []
         phone = phone
+        admin_location = None
+        admin_address = ''
 
 
 def save_data():
     data = {
         'services': services,
         'cars': cars,
-        'phone': phone
+        'phone': phone,
+        'admin_location': admin_location,
+        'admin_address': admin_address
     }
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
@@ -54,7 +63,9 @@ def home():
         "index.html",
         services=services,
         cars=cars,
-        phone=phone
+        phone=phone,
+        admin_location=admin_location,
+        admin_address=admin_address
     )
 
 @app.route("/admin", methods=["GET", "POST"])
@@ -71,9 +82,12 @@ def admin():
                 cars.pop(index)
         elif action == "update_contact":
             new_phone = request.form.get("phone", "").strip()
+            new_address = request.form.get("address", "").strip()
             if new_phone:
                 global phone
                 phone = new_phone
+            global admin_address
+            admin_address = new_address
         save_data()
         return redirect("/admin")
 
@@ -81,7 +95,9 @@ def admin():
         "admin.html",
         services=services,
         cars=cars,
-        phone=phone
+        phone=phone,
+        admin_location=admin_location,
+        admin_address=admin_address
     )
 
 @app.route("/add-service", methods=["GET", "POST"])
@@ -121,8 +137,6 @@ def add_car():
 
         name = request.form["name"]
         car_type = request.form["type"]
-        specification = request.form.get("specification", "").strip()
-        rate_per_km = request.form.get("rate_per_km", "").strip()
         image_file = request.files.get("image") or request.files.get("car_image")
         image_filename = ""
 
@@ -135,16 +149,9 @@ def add_car():
                 )
             )
 
-        try:
-            rate_per_km_value = float(rate_per_km) if rate_per_km else 0.0
-        except ValueError:
-            rate_per_km_value = 0.0
-
         cars.append({
             "name": name,
             "type": car_type,
-            "specification": specification,
-            "rate_per_km": rate_per_km_value,
             "image": image_filename
         })
         save_data()
@@ -153,39 +160,33 @@ def add_car():
 
     return render_template("add_car.html")
 
-@app.route("/edit-car/<int:index>", methods=["GET", "POST"])
-def edit_car(index):
-    if index < 0 or index >= len(cars):
-        return redirect("/admin")
 
-    car = cars[index]
+@app.route('/update-admin-location', methods=['POST'])
+def update_admin_location():
+    global admin_location
+    data = request.get_json(silent=True)
+    if not data:
+        return {'success': False, 'error': 'Invalid JSON payload'}, 400
 
-    if request.method == "POST":
-        car["name"] = request.form["name"]
-        car["type"] = request.form["type"]
-        car["specification"] = request.form.get("specification", "").strip()
-        rate_per_km = request.form.get("rate_per_km", "").strip()
-        image_file = request.files.get("image") or request.files.get("car_image")
+    lat = data.get('lat')
+    lon = data.get('lon')
+    if lat is None or lon is None:
+        return {'success': False, 'error': 'Missing lat/lon'}, 400
 
-        if image_file and image_file.filename:
-            image_filename = secure_filename(image_file.filename)
-            image_file.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    image_filename
-                )
-            )
-            car["image"] = image_filename
+    try:
+        lat = float(lat)
+        lon = float(lon)
+    except (TypeError, ValueError):
+        return {'success': False, 'error': 'Invalid coordinates'}, 400
 
-        try:
-            car["rate_per_km"] = float(rate_per_km) if rate_per_km else car.get("rate_per_km", 0.0)
-        except ValueError:
-            car["rate_per_km"] = car.get("rate_per_km", 0.0)
+    admin_location = {
+        'lat': lat,
+        'lon': lon,
+        'timestamp': datetime.utcnow().isoformat() + 'Z'
+    }
+    save_data()
+    return {'success': True, 'admin_location': admin_location}
 
-        save_data()
-        return redirect("/admin")
-
-    return render_template("edit_car.html", car=car)
 
 if __name__ == "__main__":
     app.run(debug=True)

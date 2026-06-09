@@ -82,11 +82,12 @@ name="title"
 placeholder="Service Name"
 required>
 
-<input
-type="text"
+<textarea
 name="description"
-placeholder="Description"
-required>
+placeholder="Description (one per line)"
+rows="4"
+style="width:100%;margin-top:10px;padding:15px;border:none;border-radius:10px;background:#222;color:white;"
+required></textarea>
 
 <input
 type="file"
@@ -111,7 +112,11 @@ Add Service
 
 <h3>{{ s.title }}</h3>
 
-<p>{{ s.desc }}</p>
+{% for line in s.description.split('\n') %}
+    {% if line.strip() %}
+        <p>{{ line }}</p>
+    {% endif %}
+{% endfor %}
 
 <form method="POST">
 
@@ -157,11 +162,11 @@ name="type"
 placeholder="Car Type"
 required>
 
-<input
-type="text"
+<textarea
 name="specification"
-placeholder="Specification"
->
+placeholder="Specification (one per line)"
+rows="4"
+style="width:100%;margin-top:10px;padding:15px;border:none;border-radius:10px;background:#222;color:white;"></textarea>
 
 <input
 type="number"
@@ -195,7 +200,11 @@ Add Car
 <h3>{{ c.name }}</h3>
 
 <p>{{ c.type }}</p>
-<p>{{ c.specification }}</p>
+{% for line in c.specification.split('\n') %}
+    {% if line.strip() %}
+        <p>{{ line }}</p>
+    {% endif %}
+{% endfor %}
 <p>Rate: ₹{{ c.rate_per_km }}/km</p>
 
 <form method="POST">
@@ -245,11 +254,21 @@ Delete Car
     name="action"
     value="update_contact">
 
+<label for="phone">Phone</label>
 <input
     type="text"
+    id="phone"
     name="phone"
     value="{{ phone }}"
     required>
+
+<label for="address">Office Address</label>
+<input
+    type="text"
+    id="address"
+    name="address"
+    value="{{ admin_address }}"
+    placeholder="Office Address">
 
 <button type="submit">
 Update Contact
@@ -258,6 +277,69 @@ Update Contact
 </form>
 
 </div>
+
+<div class="card" id="adminLocationCard">
+    <h2>Admin Live Location</h2>
+    <p id="adminLocationStatus">Current admin location is not set.</p>
+    <p id="adminLocationInfo"></p>
+    <button id="shareLocationButton" type="button">Share My Location</button>
+</div>
+
+<script>
+    const shareButton = document.getElementById('shareLocationButton');
+    const adminStatus = document.getElementById('adminLocationStatus');
+    const adminInfo = document.getElementById('adminLocationInfo');
+
+    function renderAdminLocation(location) {
+        if (!location || !location.lat || !location.lon) {
+            adminStatus.textContent = 'Current admin location is not set.';
+            adminInfo.textContent = '';
+            return;
+        }
+        adminStatus.textContent = 'Admin location is set.';
+        adminInfo.innerHTML = `Latitude: <strong>${location.lat}</strong><br>Longitude: <strong>${location.lon}</strong><br>Updated: <strong>${location.timestamp}</strong>`;
+    }
+
+    async function shareLocation() {
+        if (!navigator.geolocation) {
+            adminStatus.textContent = 'Geolocation is not supported by your browser.';
+            return;
+        }
+
+        adminStatus.textContent = 'Sharing location… please allow access.';
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            try {
+                const response = await fetch('/update-admin-location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ lat, lon })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    renderAdminLocation(result.admin_location);
+                } else {
+                    adminStatus.textContent = 'Failed to update location: ' + (result.error || 'Unknown error');
+                }
+            } catch (error) {
+                adminStatus.textContent = 'Unable to update location: ' + error.message;
+            }
+        }, (error) => {
+            adminStatus.textContent = 'Unable to get current location: ' + error.message;
+        }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
+    }
+
+    shareButton.addEventListener('click', shareLocation);
+    renderAdminLocation({{ admin_location | tojson }});
+</script>
 
 </body>
 

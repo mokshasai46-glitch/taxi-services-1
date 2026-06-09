@@ -384,6 +384,63 @@ footer h2{
     z-index:1000;
 }
 
+.location-panel{
+    margin-top:40px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,215,0,0.15);
+    border-radius:30px;
+    padding:30px;
+    text-align:center;
+}
+
+.location-panel h3{
+    color:gold;
+    margin-bottom:20px;
+}
+
+.location-panel button{
+    padding:16px 34px;
+    border:none;
+    border-radius:15px;
+    background:gold;
+    color:black;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.location-panel p{
+    margin-top:20px;
+    color:#ccc;
+    line-height:1.8;
+}
+
+.location-details{
+    margin-top:20px;
+    color:#ddd;
+}
+
+#adminMapContainer{
+    margin-top:25px;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid rgba(255,215,0,0.15);
+}
+
+#adminMapFrame{
+    width:100%;
+    min-height:300px;
+    border:0;
+}
+
+#adminMapLink{
+    display:inline-block;
+    margin-top:20px;
+    color:gold;
+    text-decoration:none;
+    font-weight:bold;
+}
+
 /* MOBILE */
 
 @media(max-width:768px){
@@ -431,7 +488,6 @@ Luxury Driver
 
 <li><a href="#services">Services</a></li>
 <li><a href="#cars">Cars</a></li>
-<li><a href="#stats">Stats</a></li>
 <li><a href="#contact">Contact</a></li>
 
 </ul>
@@ -490,9 +546,11 @@ Explore Services
 
 <h3>{{ s.title }}</h3>
 
-<p>
-{{ s.description }}
-</p>
+{% for line in s.description.split('\n') %}
+    {% if line.strip() %}
+        <p>{{ line }}</p>
+    {% endif %}
+{% endfor %}
 
 </div>
 
@@ -527,50 +585,20 @@ Explore Services
 <h3>{{ c.name }}</h3>
 
 <p>{{ c.type }}</p>
-<p>{{ c.specification }}</p>
-<p>Rate: ₹{{ c.rate_per_km }}/km</p>
+
+{% if c.specification %}
+    {% for line in c.specification.split('\n') %}
+        {% if line.strip() %}
+            <p>{{ line }}</p>
+        {% endif %}
+    {% endfor %}
+{% endif %}
 
 </div>
 
 </div>
 
 {% endfor %}
-
-</div>
-
-</section>
-
-<!-- STATS -->
-
-<section id="stats">
-
-<h2>Our Achievements</h2>
-
-<div class="stats">
-
-<div class="stat-box">
-
-<h1>5000+</h1>
-
-<p>Happy Clients</p>
-
-</div>
-
-<div class="stat-box">
-
-<h1>10+</h1>
-
-<p>Years Experience</p>
-
-</div>
-
-<div class="stat-box">
-
-<h1>24/7</h1>
-
-<p>Service Available</p>
-
-</div>
 
 </div>
 
@@ -586,9 +614,22 @@ Explore Services
 Available anytime for premium travel services.
 </p>
 
+{% if admin_address %}
+<p>
+<strong>Office Address:</strong> {{ admin_address }}
+</p>
+{% endif %}
+
+<p>
+<strong>Contact:</strong> {{ phone }}
+</p>
+<p>
+<strong>WhatsApp:</strong> {{ phone }}
+</p>
+
 <div class="contact-buttons">
 
-<a href="tel:+911234567890">
+<a href="tel:{{ phone }}">
 
 <button>
 Call Now
@@ -596,7 +637,7 @@ Call Now
 
 </a>
 
-<a href="https://wa.me/911234567890">
+<a href="https://wa.me/{{ phone | replace('+', '') }}">
 
 <button class="whatsapp">
 WhatsApp
@@ -606,27 +647,19 @@ WhatsApp
 
 </div>
 
-</section>
-
-<!-- FOOTER -->
-
-<footer>
-
-<h2>Luxury Driver</h2>
-
-<p>
-Premium Travel Experience
-</p>
-
-</footer>
-
-<a
-href="https://wa.me/911234567890"
-class="float-btn">
-
-WhatsApp
-
-</a>
+<div class="location-panel">
+    <h3>Admin Live Location</h3>
+    {% if admin_location %}
+        <p>Last updated: {{ admin_location.timestamp }}</p>
+        <p>Latitude: <strong>{{ admin_location.lat }}</strong><br>Longitude: <strong>{{ admin_location.lon }}</strong></p>
+        <div id="adminMapContainer">
+            <iframe id="adminMapFrame" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox={{ admin_location.lon-0.02 }}%2C{{ admin_location.lat-0.02 }}%2C{{ admin_location.lon+0.02 }}%2C{{ admin_location.lat+0.02 }}&layer=mapnik&marker={{ admin_location.lat }}%2C{{ admin_location.lon }}"></iframe>
+        </div>
+        <a id="adminMapLink" href="https://www.openstreetmap.org/?mlat={{ admin_location.lat }}&mlon={{ admin_location.lon }}#map=15/{{ admin_location.lat }}/{{ admin_location.lon }}" target="_blank">Open admin location</a>
+    {% else %}
+        <p>Admin location is not available yet. The admin can share their location from the dashboard.</p>
+    {% endif %}
+</div>
 
 </body>
 

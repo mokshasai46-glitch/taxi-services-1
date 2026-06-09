@@ -1,5 +1,7 @@
 {
   "services": [],
   "cars": [],
-  "phone": "8500852845"
+  "phone": "1234567890",
+  "admin_location": null,
+  "admin_address": ""
 }
